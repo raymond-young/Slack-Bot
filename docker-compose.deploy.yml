@@ -1,0 +1,53 @@
+version: '3'
+services:
+  api_listener:
+    image: sip_api_listener
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+  api_messager:
+    image: sip_api_messager
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+  command:
+    image: sip_command
+    environment:
+      - PYTHONUNBUFFERED=0
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+      - zookeeper:zookeeper
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    expose:
+      - "2181"
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    expose:
+      - "9092"
+    ports:
+      - "16001:16001"
+    environment:
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CREATE_TOPICS: message:1:1,countdown:1:1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:16001
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://:9092,EXTERNAL://localhost:16001
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - zookeeper:zookeeper
+    depends_on:
+      - zookeeper

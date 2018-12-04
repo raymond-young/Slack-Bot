@@ -1,0 +1,51 @@
+version: '3'
+services:
+  api_listener:
+    build: ./api/listener
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+  api_messager:
+    build: ./api/messager
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+      - zookeeper:zookeeper
+  command:
+    build: ./command
+    environment:
+      - PYTHONUNBUFFERED=0
+    depends_on:
+      - kafka
+    links:
+      - kafka:kafka
+      - zookeeper:zookeeper
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    expose:
+      - "2181"
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    environment:
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CREATE_TOPICS: message:1:1,countdown:1:1
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9092:9092"
+    expose:
+      - "9092"
+    links:
+      - zookeeper:zookeeper
+    depends_on:
+      - zookeeper

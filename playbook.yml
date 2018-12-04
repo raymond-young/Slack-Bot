@@ -1,0 +1,78 @@
+- name: Build images
+  hosts: localhost
+  connection: local
+  tasks:
+    - file:
+        path: ./build
+        state: directory
+    - name: Build Api Listener
+      docker_image:
+        name: sip_api_listener
+        path: 'api/listener'
+        force: yes
+        archive_path: ./build/api_listener.tar
+    - name: Build Api Messager
+      docker_image:
+        name: sip_api_messager
+        path: 'api/messager'
+        force: yes
+        archive_path: ./build/api_messager.tar
+    - name: Build Command
+      docker_image:
+        name: sip_command
+        path: 'command'
+        force: yes
+        archive_path: ./build/command.tar
+- name: Install prerequisites
+  hosts: all
+  tasks:
+    - file:
+        path: ~/sip
+        state: directory
+    #- name: Install necessary os packages
+    #  yum:
+    #    name: ['git', 'python', 'docker', 'docker-compose']
+    #    state: present
+    - name: Install necessary python packages
+      pip:
+        name: ['docker', 'docker-compose']
+        state: present
+        virtualenv: ~/sip/.env/
+  # Switch to virtual environment
+- name: Run repository
+  hosts: all
+  vars:
+    ansible_python_interpreter: '/home/duck/sip/.env/bin/python'
+  tasks:
+    - name: Load composition
+      synchronize:
+        src: ./docker-compose.deploy.yml
+        dest: ~/sip/docker-compose.yml
+    - name: Pull docker images
+      synchronize:
+        src: ./build
+        dest: ~/sip
+    - name: Load Api Listener
+      docker_image:
+        name: sip_api_listener
+        load_path: ~/sip/build/api_listener.tar
+        force: yes
+    - name: Load Api Messager
+      docker_image:
+        name: sip_api_messager
+        load_path: ~/sip/build/api_messager.tar
+        force: yes
+    - name: Load Command
+      docker_image:
+        name: sip_command
+        load_path: ~/sip/build/command.tar
+        force: yes
+    - name: Remove old docker
+      docker_service:
+        project_src: ~/sip
+        stopped: yes
+    - name: Clear old docker builds
+      shell: docker container prune -f
+    - name: Initiate docker
+      docker_service:
+        project_src: ~/sip
