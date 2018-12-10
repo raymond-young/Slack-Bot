@@ -6,3 +6,10 @@ Slack plugin that was started whilst interning at Orion Health
 # Testing
 Currently runs on `localhost:8081` ok. 
 There is a file which can be imported into Postman to allow for testing (make sure HTTP proxy is started before you send the message if you wish to test).
+
+
+# Technologies
+Ansible
+Docker (Docker-compose)
+Python
+Kafka & Zookeeper
