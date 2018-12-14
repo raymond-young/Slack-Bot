@@ -9,7 +9,7 @@ There is a file which can be imported into Postman to allow for testing (make su
 
 
 # Technologies
-Ansible
-Docker (Docker-compose)
-Python
-Kafka & Zookeeper
+- `Ansible` for automatic deployment
+- `Docker` (Docker-compose) for containerisation and deployment
+- `Python 3` for logic
+- `Kafka` & `Zookeeper` as a messaging service
