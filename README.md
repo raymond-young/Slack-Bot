@@ -16,6 +16,7 @@ There is a file which can be imported into Postman to allow for testing (make su
 - `Python 3` for logic
 - `Kafka` & `Zookeeper` as a messaging service
 
+Relies on webhooks for the messages to appear in Slack.
 
 # TODO
 - Deploy it externally (potentially need a server with a public IP to do so).
