@@ -1,5 +1,5 @@
 # Slack-Plugin
-Slack plugin that was started whilst interning at Orion Health
+Slack plugin designed to take follow simple commands and output.
 
 Navigating to the project directory and running `./start.sh` should run the `docker-compose` file, which should in turn download all the dependencies required.
 
