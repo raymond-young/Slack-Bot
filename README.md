@@ -19,4 +19,4 @@ There is a file which can be imported into Postman to allow for testing (make su
 Relies on webhooks for the messages to appear in Slack.
 
 # TODO
-- Deploy it externally (potentially need a server with a public IP to do so).
+- Have this bot be hosted externally (potentially need a server with a public IP to do so).
